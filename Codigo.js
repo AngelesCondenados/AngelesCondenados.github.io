@@ -3,11 +3,11 @@
 /*
  Código: Codigo.js
  Propósito general:
- - Controlar el formulario de login (`Login.html`) en el cliente.
+ - Controlar el formulario de login (`index.html`) en el cliente.
  - Validar que los campos Usuario/Contraseña no estén vacíos.
  - Mostrar/ocultar la contraseña con el botón "ojo".
- - Intentar comprobar si `index.html` existe antes de redirigir y, si existe,
-   redirigir a `index.html?user=<usuario>` (para mostrar el usuario en la página de destino).
+ - Intentar comprobar si `inicio.html` existe antes de redirigir y, si existe,
+   redirigir a `inicio.html?user=<usuario>` (para mostrar el usuario en la página de destino).
 
  Notas:
  - Esta validación es solo de ejemplo (client-side). La verificación real de credenciales
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ---------- Envío del formulario (validación mínima) ----------
        - Evitar el envío por defecto (sin back-end en este ejemplo)
        - Mostrar errores si algún campo está vacío
-       - Si ambos campos están presentes: intentar comprobar que index.html existe
+       - Si ambos campos están presentes: intentar comprobar que inicio.html existe
          y redirigir pasando el usuario en la query string.
     */
     if (form) {
@@ -64,28 +64,28 @@ document.addEventListener('DOMContentLoaded', function () {
             // Indicar al usuario que se inicia sesión (simulación)
             if (error) error.textContent = 'Iniciando sesión...';
 
-            // ---------- Comprobar existencia de index.html antes de redirigir ----------
+            // ---------- Comprobar existencia de inicio.html antes de redirigir ----------
             (async function checkAndRedirect() {
                 try {
                     // Intentamos un HEAD para ahorrar transferencia; si no funciona, hacemos GET
-                    let resp = await fetch('index.html', { method: 'HEAD' });
+                    let resp = await fetch('inicio.html', { method: 'HEAD' });
                     if (!resp || !resp.ok) {
                         // Fallback a GET en caso de que HEAD no esté soportado
-                        resp = await fetch('index.html', { method: 'GET' });
+                        resp = await fetch('inicio.html', { method: 'GET' });
                     }
 
                     if (resp && resp.ok) {
                         // Si existe, redirigimos con el usuario en la querystring
-                        const target = 'index.html?user=' + encodeURIComponent(userVal);
+                        const target = 'inicio.html?user=' + encodeURIComponent(userVal);
                         setTimeout(function () { window.location.href = target; }, 400);
                     } else {
-                        // No existe index.html en el servidor/origen
-                        if (error) error.textContent = 'No se encontró la página index.html en este sitio.';
+                        // No existe inicio.html en el servidor/origen
+                        if (error) error.textContent = 'No se encontró la página inicio.html en este sitio.';
                     }
                 } catch (err) {
                     // Errores de red (p.ej. al usar file:// o problemas CORS)
-                    if (error) error.textContent = 'No se pudo comprobar la existencia de index.html (error de red).';
-                    console.error('Error comprobando index.html:', err);
+                    if (error) error.textContent = 'No se pudo comprobar la existencia de inicio.html (error de red).';
+                    console.error('Error comprobando inicio.html:', err);
                 }
             })();
         });

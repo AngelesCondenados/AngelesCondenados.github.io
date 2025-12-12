@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ángeles Condenados</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Header / Topbar -->
+    <header class="topbar">
+        <div class="container">
+            <div class="brand-left">
+                <h2 class="site-title">Ángeles Condenados</h2>
+            </div>
+
+            <nav class="main-nav" aria-label="Menú principal">
+                <ul class="nav-list">
+                    <li class="nav-item dropdown">
+                        <button class="drop-toggle" aria-haspopup="true" aria-expanded="false">Usuarios ▾</button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li role="none"><a role="menuitem" href="#" data-src="Fromatos/AltaUsuarios.html">Alta usuario</a></li>
+                            <li role="none"><a role="menuitem" href="#" data-src="Fromatos/VerUsuarios.html">Ver usuarios</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item"><a href="#">Mensualidades</a></li>
+                    <li class="nav-item"><a href="#">Inventario</a></li>
+                </ul>
+            </nav>
+
+            <!-- Zona derecha: nombre de usuario y menú de acciones (logout)
+                 Se usa la misma estructura de dropdown que el menú "Usuarios" para
+                 que el comportamiento y estilos sean consistentes.
+            -->
+            <div class="user-right dropdown">
+                <span class="user-label">Hola,</span>
+                <button id="userDisplay" class="drop-toggle user-name" aria-haspopup="true" aria-expanded="false">Invitado ▾</button>
+
+                <ul class="dropdown-menu user-dropdown" role="menu">
+                    <li role="none"><button id="logoutBtn" class="user-menu-item" role="menuitem">Cerrar sesión</button></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="content container">
+        <h3>Bienvenido</h3>
+        <p>Contenido principal de la aplicación.</p>
+    </main>
+
+    <!--
+      Script en línea para index.html
+      - Lee la querystring ?user=... y muestra el nombre en la esquina superior derecha
+      - Gestiona el comportamiento del dropdown (abrir/cerrar)
+      - Gestiona el menú del usuario y la acción de cerrar sesión
+      - Comentarios: en una app real se movería este comportamiento a un archivo .js separado
+    -->
+    <script>
+    (function(){
+        /** Obtener parámetro de la querystring por nombre */
+        function getQueryParam(name){
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        // Mostrar el nombre del usuario si viene en la URL: index.html?user=juan
+        const user = getQueryParam('user');
+        const userEl = document.getElementById('userDisplay');
+        const userMenu = document.getElementById('userMenu');
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (user && userEl){
+            // decodeURIComponent por si el nombre vino codificado
+            userEl.textContent = decodeURIComponent(user) + ' ▾';
+        }
+
+        // Comportamiento simple para dropdowns (menu Usuarios y menu Usuario)
+        document.querySelectorAll('.drop-toggle').forEach(function(btn){
+            btn.addEventListener('click', function(e){
+                e.stopPropagation(); // evitar que el document click cierre inmediatamente
+                const parent = btn.parentElement;
+                const expanded = btn.getAttribute('aria-expanded') === 'true';
+                btn.setAttribute('aria-expanded', String(!expanded));
+                parent.classList.toggle('open', !expanded);
+            });
+        });
+
+        // Cerrar cualquier dropdown abierto al hacer click fuera
+        document.addEventListener('click', function(e){
+            document.querySelectorAll('.dropdown.open').forEach(function(d){
+                d.classList.remove('open');
+                const toggle = d.querySelector('.drop-toggle');
+                if (toggle) toggle.setAttribute('aria-expanded','false');
+            });
+        });
+
+        // Acción de cerrar sesión: volver al login
+        if (logoutBtn){
+            logoutBtn.addEventListener('click', function(){
+                // Redirigir al login (se podría limpiar almacenamiento/localStorage aquí)
+                window.location.href = 'Login.html';
+            });
+        }
+
+        /* ---------- Cargar páginas parciales dentro del <main> ----------
+           - Links con atributo data-src serán cargados con fetch
+           - Extraemos el <main> relevante del documento fetched (o el primer <main> / .form-page)
+           - Inyectamos su contenido y ejecutamos los scripts embebidos/external
+        */
+        async function loadFragment(src){
+            try{
+                const resp = await fetch(src);
+                if (!resp.ok) throw new Error('Error HTTP ' + resp.status);
+                const text = await resp.text();
+
+                // Parsear el HTML recibido
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+
+                // Intentar obtener el main específico de la página (form-page) o el primer main
+                let fragmentMain = doc.querySelector('.form-page') || doc.querySelector('main');
+                const targetMain = document.querySelector('main.content.container');
+                if (!targetMain) return;
+
+                if (fragmentMain){
+                    targetMain.innerHTML = fragmentMain.innerHTML;
+                } else {
+                    // fallback: insertar todo el body
+                    targetMain.innerHTML = doc.body.innerHTML;
+                }
+
+                // Inyectar estilos del documento fetched (style y link rel=stylesheet)
+                const styles = Array.from(doc.querySelectorAll('style'));
+                styles.forEach(function(st){ document.head.appendChild(st.cloneNode(true)); });
+                const links = Array.from(doc.querySelectorAll('link[rel="stylesheet"]'));
+                links.forEach(function(ln){
+                    // evitar duplicar si ya existe un link con la misma href
+                    const href = ln.getAttribute('href');
+                    if (href && !document.querySelector('link[href="' + href + '"]')){
+                        const newLink = document.createElement('link');
+                        newLink.rel = 'stylesheet';
+                        newLink.href = href;
+                        document.head.appendChild(newLink);
+                    }
+                });
+
+                // Ejecutar scripts del documento fetched
+                const scripts = Array.from(doc.querySelectorAll('script'));
+                for (const s of scripts){
+                    const newScript = document.createElement('script');
+                    if (s.src){
+                        newScript.src = s.src;
+                    } else {
+                        newScript.textContent = s.textContent;
+                    }
+                    document.body.appendChild(newScript);
+                }
+
+                // Actualizar el título (opcional): si el fragment tiene <title>
+                const fragTitle = doc.querySelector('title');
+                if (fragTitle) document.title = fragTitle.textContent;
+            }catch(err){
+                console.error('Error cargando fragmento', err);
+                alert('No se pudo cargar la página: ' + err.message);
+            }
+        }
+
+        // Delegar clics en enlaces con data-src para cargar en main
+        document.querySelectorAll('a[data-src]').forEach(function(a){
+            a.addEventListener('click', function(e){
+                e.preventDefault();
+                const src = a.getAttribute('data-src');
+                if (src) loadFragment(src);
+                // cerrar dropdown
+                const parent = a.closest('.dropdown');
+                if (parent) parent.classList.remove('open');
+            });
+        });
+    })();
+    </script>
+</body>
+</html>

@@ -25,12 +25,15 @@
 			label{ display:block; color:#222 !important; background:transparent !important; padding:6px 0; font-weight:700; }
 
 			/* Inputs más grandes y con mejor padding */
-			input[type="text"], input[type="number"], select, textarea{
+			input[type="text"], input[type="number"], input[type="tel"], select, textarea{
 				padding:12px 14px; font-size:15.5px; border-radius:10px; border:1px solid #e0e0e0; width:100%; background:#fff; color:#111;
 			}
 
 			/* Botones más visibles y grandes */
-			.form-actions .btn{ padding:12px 18px; font-size:16px; border-radius:8px; }
+			.form-actions .btn{ padding:12px 18px; font-size:16px; border-radius:10px; border:1px solid #e0e0e0; background:#fff; color:#111; font-weight:700; cursor:pointer; transition:all 0.2s ease; }
+			.form-actions .btn:hover{ background:#f5f5f5; border-color:#ccc; }
+			.form-actions .btn[type="submit"]{ background:#111; color:#fff; border-color:#111; }
+			.form-actions .btn[type="submit"]:hover{ background:#333; }
 
 			/* Ajustes responsive */
 			@media (max-width:920px){ .row{ flex-direction:column; } .form-page{ padding:20px; max-width:92%; } }
@@ -69,6 +72,18 @@
 						<input id="direccion" name="direccion" type="text" required placeholder="Calle, ciudad, estado">
 					</div>
 				</div>
+
+				<div class="row" style="margin-top:10px;">
+					<div class="col">
+						<label for="numTelefono">Número de teléfono *</label>
+						<input id="numTelefono" name="numTelefono" type="tel" required placeholder="Tu número de teléfono">
+					</div>
+
+					<div class="col">
+						<label for="emergencia">Número de emergencia *</label>
+						<input id="emergencia" name="emergencia" type="tel" required placeholder="Teléfono de emergencia">
+					</div>
+				</div>
 			</fieldset>
 
 			<h3 class="section-title">Datos de la moto / afiliación</h3>
@@ -84,11 +99,6 @@
 						<label for="cilindrada">Cilindrada (cc) *</label>
 						<input id="cilindrada" name="cilindrada" type="number" min="50" required placeholder="Ej: 150">
 					</div>
-				</div>
-
-				<div style="margin-top:10px;">
-					<label for="invitado">¿Quién lo invitó? *</label>
-					<input id="invitado" name="invitado" type="text" required placeholder="Nombre de quien invitó">
 				</div>
 
 				<div style="margin-top:10px;">
@@ -127,9 +137,10 @@
 					apodo: document.getElementById('apodo').value.trim(),
 					edad: parseInt(document.getElementById('edad').value,10) || null,
 					direccion: document.getElementById('direccion').value.trim(),
+					numTelefono: document.getElementById('numTelefono').value.trim(),
+					emergencia: document.getElementById('emergencia').value.trim(),
 					marca: document.getElementById('marca').value.trim(),
 					cilindrada: parseInt(document.getElementById('cilindrada').value,10) || null,
-					invitado: document.getElementById('invitado').value.trim(),
 					rol: document.getElementById('rol').value
 				};
 			}
@@ -138,9 +149,10 @@
 				if (!data.nombre) return 'El nombre es obligatorio.';
 				if (!data.edad || data.edad < 14) return 'Edad inválida.';
 				if (!data.direccion) return 'La dirección es obligatoria.';
+				if (!data.numTelefono) return 'El número de teléfono es obligatorio.';
+				if (!data.emergencia) return 'El número de emergencia es obligatorio.';
 				if (!data.marca) return 'La marca de la moto es obligatoria.';
 				if (!data.cilindrada) return 'La cilindrada es obligatoria.';
-				if (!data.invitado) return 'Indica quién lo invitó.';
 				if (!data.rol) return 'Selecciona un rol.';
 				return null;
 			}
