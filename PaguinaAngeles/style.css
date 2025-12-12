@@ -1,0 +1,141 @@
+/* Reset básico */
+* { box-sizing: border-box; }
+html,body{ height:100%; }
+body{
+	margin:0;
+	font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	/* Imagen de fondo (archivo: Image/logo angeles.jpg) con una capa oscura para legibilidad */
+	background:
+		linear-gradient(rgba(6,10,20,0.55), rgba(6,10,20,0.35)),
+		url("Image/logo angeles.jpg") center/cover no-repeat;
+	background-color:#06060a; /* fallback */
+	color:#222;
+	-webkit-font-smoothing:antialiased;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	min-height:100vh;
+}
+
+.bg{ display:none; }
+
+.login-container{ position:relative; z-index:1; width:100%; max-width:420px; padding:24px; }
+.card{
+	background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(250,250,250,0.92));
+	border-radius:14px; box-shadow: 0 10px 30px rgba(16,24,40,0.25);
+	padding:22px; display:flex; flex-direction:column; gap:12px;
+}
+
+.brand{ display:flex; gap:12px; align-items:center; margin-bottom:4px; }
+.logo{
+	width:56px; height:56px; border-radius:10px; display:grid; place-items:center; font-weight:700; color:white; background:linear-gradient(135deg,#ff7a7a,#ffb86b);
+	font-size:22px; box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+.brand h1{ margin:0; font-size:18px; }
+.subtitle{ margin:0; color:#666; font-size:13px; }
+
+.login-form{ display:flex; flex-direction:column; gap:12px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+label{ font-size:13px; color:#333; }
+input[type="text"], input[type="password"], input[type="email"]{
+	padding:10px 12px; border-radius:8px; border:1px solid #e6e6e6; background:white; font-size:14px;
+	transition: box-shadow .12s, border-color .12s;
+}
+input:focus{ outline:none; border-color:#7b2ff7; box-shadow:0 6px 20px rgba(123,47,247,0.08); }
+
+.password-wrapper{ display:flex; gap:8px; align-items:center; }
+.password-wrapper .toggle-pass{ background:transparent; border:0; cursor:pointer; font-size:18px; padding:6px; border-radius:6px; }
+.password-wrapper .toggle-pass:focus{ outline:2px solid rgba(123,47,247,0.12); }
+
+.actions{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:4px; }
+.remember{ font-size:13px; color:#444; display:flex; align-items:center; gap:6px; }
+.btn{ background:linear-gradient(90deg,#7b2ff7,#f107a3); color:white; border:0; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600; box-shadow:0 8px 20px rgba(241,7,163,0.12); }
+.btn:hover{ transform:translateY(-1px); }
+
+.error{ color:#b91c1c; font-size:13px; height:18px; margin:4px 0 0; }
+.small{ font-size:13px; color:#666; text-align:center; margin:8px 0 0; }
+.small a{ color:#7b2ff7; text-decoration:none; }
+
+@media (max-width:480px){
+	.login-container{ padding:12px; }
+	.card{ padding:16px; border-radius:12px; }
+}
+
+/* pequeños toques para accesibilidad y estado deshabilitado */
+button:disabled{ opacity:0.6; cursor:not-allowed; }
+
+/* Estilos para header / navegación en index.html */
+.topbar{ position:fixed; inset:0 0 auto 0; /* fondo difuminado: rojo -> negro (transición suave) */
+	background: linear-gradient(90deg,
+		rgba(185,28,28,1) 0%,
+		rgba(185,28,28,0.95) 28%,
+		rgba(185,28,28,0.6) 44%,
+		rgba(60,10,10,0.45) 55%,
+		rgba(10,10,10,0.85) 75%,
+		rgba(0,0,0,1) 100%
+	);
+	padding:10px 0; z-index:60; }
+.topbar .container{ max-width:1100px; margin:0 auto; padding:0 18px; display:flex; align-items:center; gap:12px; justify-content:space-between; }
+.site-title{ color:#fff; margin:0; font-size:18px; letter-spacing:0.6px; font-weight:800; text-transform:uppercase; }
+
+.main-nav .nav-list{ list-style:none; margin:0; padding:0; display:flex; gap:10px; align-items:center; }
+.nav-item a, .drop-toggle{ color:#fff; text-decoration:none; background:transparent; border:0; padding:8px 10px; border-radius:8px; cursor:pointer; font-weight:600; }
+.nav-item a:hover, .drop-toggle:hover{ background:rgba(255,255,255,0.08); }
+
+/* Asegurar contraste: si el texto aparece sobre la parte roja, mantenerlo legible */
+.topbar .site-title{ mix-blend-mode:screen; }
+.user-right{ mix-blend-mode:screen; }
+
+.dropdown{ position:relative; }
+.dropdown .dropdown-menu{ position:absolute; right:0; top:calc(100% + 8px); background:rgba(255,255,255,0.98); color:#111; border-radius:8px; padding:8px 6px; box-shadow:0 8px 24px rgba(2,6,23,0.4); display:none; min-width:160px; }
+.dropdown.open .dropdown-menu{ display:block; }
+.dropdown .dropdown-menu a{ display:block; padding:8px 12px; color:#111; text-decoration:none; border-radius:6px; }
+.dropdown .dropdown-menu a:hover{ background:#f3f3f3; }
+
+/* Estilos para dropdown del usuario (hereda de .dropdown .dropdown-menu pero con ajustes) */
+.user-right.dropdown{ position:relative; }
+.user-right .user-name{ background:transparent; color:#fff; border:0; padding:6px 10px; border-radius:8px; cursor:pointer; }
+.user-right .user-name:focus{ outline:2px solid rgba(255,255,255,0.12); }
+.user-right .user-dropdown{ right:0; left:auto; min-width:140px; }
+.user-right .user-dropdown li{ list-style:none; }
+.user-right .user-dropdown .user-menu-item{ width:100%; text-align:left; background:transparent; border:0; padding:8px 12px; cursor:pointer; border-radius:6px; }
+.user-right .user-dropdown .user-menu-item:hover{ background:#f3f3f3; }
+
+.user-right{ color:#fff; display:flex; align-items:center; gap:8px; font-weight:600; }
+.user-name{ color:#fff; background:rgba(255,255,255,0.08); padding:6px 10px; border-radius:999px; }
+
+/* hacer espacio para header fijo */
+body{ padding-top:68px; }
+
+.content.container{ max-width:1100px; margin:20px auto; padding:20px; color:#fff; }
+
+@media (max-width:720px){
+	.topbar .container{ flex-direction:column; align-items:flex-start; gap:8px; }
+	.main-nav .nav-list{ flex-wrap:wrap; }
+}
+
+/* Si se inyectan fragmentos de formulario dentro de .content.container, asegurar
+   que mantengan el estilo de "form-page" y que el contenedor blanco cubra todo
+   el contenido y sea legible (cuando se carga AltaUsuarios.html dentro de index) */
+.content.container .form-page{
+	max-width:1100px;
+	margin:18px auto;
+	padding:28px 24px;
+	background:transparent;
+	color:#111; /* texto dentro del formulario debe ser oscuro */
+}
+.content.container .form-page fieldset{
+	border:1px solid rgba(0,0,0,0.06);
+	padding:22px;
+	border-radius:12px;
+	background:rgba(255,255,255,0.995);
+	box-shadow:0 18px 40px rgba(2,6,23,0.12);
+}
+.content.container .form-page legend{ font-size:20px; font-weight:900; color:#0b0b0b; }
+.content.container .form-page label{ color:#222 !important; }
+.content.container .form-page .section-title{ color:#fff; font-size:20px; font-weight:900; margin:0 0 10px 0; }
+.content.container .form-page .back-btn{ display:inline-block; padding:10px 14px; background:#111; color:#fff; border-radius:8px; font-weight:700; margin-bottom:14px; text-decoration:none; font-size:15px; }
+
+@media (max-width:920px){
+	.content.container .form-page{ padding:18px; max-width:92%; }
+}

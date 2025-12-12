@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="es">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Alta de Usuario</title>
+	<!-- Reusar estilos generales -->
+	<link rel="stylesheet" href="../style.css">
+		<style>
+			/* Pequeños ajustes para esta página (mejor legibilidad y tamaño) */
+			.form-page{ max-width:1100px; margin:30px auto; padding:30px; font-size:17px; }
+			/* Fieldset debe ser claramente una tarjeta blanca que cubra todo el contenido */
+			fieldset{ border:1px solid rgba(0,0,0,0.06); padding:24px; border-radius:12px; background:rgba(255,255,255,0.995); box-shadow:0 18px 40px rgba(2,6,23,0.12); }
+			/* Sección - título colocado POR ENCIMA del contenedor blanco */
+			.section-title{ color:#fff; font-size:20px; font-weight:900; margin:0 0 10px 0; }
+			.row{ display:flex; gap:18px; align-items:flex-start; }
+			.col{ flex:1; }
+			.form-actions{ display:flex; gap:12px; align-items:center; margin-top:18px; }
+			.note{ font-size:15px; color:#222; }
+
+			/* Botón "Volver" más visible y de mayor tamaño */
+			.back-btn{ display:inline-block; padding:10px 14px; background:#111; color:#fff; border-radius:8px; font-weight:700; margin-bottom:14px; text-decoration:none; font-size:15px; }
+
+			/* Asegurar que las etiquetas no tengan fondo y se lean bien sobre el blanco */
+			label{ display:block; color:#222 !important; background:transparent !important; padding:6px 0; font-weight:700; }
+
+			/* Inputs más grandes y con mejor padding */
+			input[type="text"], input[type="number"], select, textarea{
+				padding:12px 14px; font-size:15.5px; border-radius:10px; border:1px solid #e0e0e0; width:100%; background:#fff; color:#111;
+			}
+
+			/* Botones más visibles y grandes */
+			.form-actions .btn{ padding:12px 18px; font-size:16px; border-radius:8px; }
+
+			/* Ajustes responsive */
+			@media (max-width:920px){ .row{ flex-direction:column; } .form-page{ padding:20px; max-width:92%; } }
+		</style>
+</head>
+<body>
+	<main class="form-page">
+		<a href="../index.html" class="note back-btn">◀ Volver</a>
+		<h2>Alta de usuario</h2>
+
+		<!-- Formulario para capturar datos básicos del usuario -->
+		<form id="altaForm" novalidate>
+			<h3 class="section-title">Datos personales</h3>
+			<fieldset>
+
+				<div class="row">
+					<div class="col">
+						<label for="nombre">Nombre completo *</label>
+						<input id="nombre" name="nombre" type="text" required placeholder="Nombre y apellidos">
+					</div>
+
+					<div class="col">
+						<label for="apodo">Apodo (opcional)</label>
+						<input id="apodo" name="apodo" type="text" placeholder="Apodo si tiene">
+					</div>
+				</div>
+
+				<div class="row" style="margin-top:10px;">
+					<div class="col">
+						<label for="edad">Edad *</label>
+						<input id="edad" name="edad" type="number" min="14" max="120" required placeholder="Edad">
+					</div>
+
+					<div class="col">
+						<label for="direccion">Dirección *</label>
+						<input id="direccion" name="direccion" type="text" required placeholder="Calle, ciudad, estado">
+					</div>
+				</div>
+			</fieldset>
+
+			<h3 class="section-title">Datos de la moto / afiliación</h3>
+			<fieldset style="margin-top:12px;">
+
+				<div class="row">
+					<div class="col">
+						<label for="marca">Marca de moto *</label>
+						<input id="marca" name="marca" type="text" required placeholder="Ej: Honda, Yamaha">
+					</div>
+
+					<div class="col">
+						<label for="cilindrada">Cilindrada (cc) *</label>
+						<input id="cilindrada" name="cilindrada" type="number" min="50" required placeholder="Ej: 150">
+					</div>
+				</div>
+
+				<div style="margin-top:10px;">
+					<label for="invitado">¿Quién lo invitó? *</label>
+					<input id="invitado" name="invitado" type="text" required placeholder="Nombre de quien invitó">
+				</div>
+
+				<div style="margin-top:10px;">
+					<label for="rol">Rol *</label>
+					<select id="rol" name="rol" required>
+						<option value="">-- Selecciona un rol --</option>
+						<option>Original</option>
+						<option>Invitado</option>
+						<option>Prospecto</option>
+						<option>Presidente</option>
+						<option>Secretario</option>
+						<option>Tesorero</option>
+						<option>Sargento de armas</option>
+						<option>Cap de ruta</option>
+						<option>Coordinador de prospectos</option>
+					</select>
+				</div>
+			</fieldset>
+
+			<div class="form-actions">
+				<button type="submit" class="btn">Capturar usuario</button>
+				<button type="reset" class="btn" style="background:#ccc;color:#111;">Limpiar</button>
+				<p id="msg" class="note" aria-live="polite" style="margin:0 0 0 8px;"></p>
+			</div>
+		</form>
+	</main>
+
+	<script>
+		(function(){
+			const form = document.getElementById('altaForm');
+			const msg = document.getElementById('msg');
+
+			function readFormData(){
+				return {
+					nombre: document.getElementById('nombre').value.trim(),
+					apodo: document.getElementById('apodo').value.trim(),
+					edad: parseInt(document.getElementById('edad').value,10) || null,
+					direccion: document.getElementById('direccion').value.trim(),
+					marca: document.getElementById('marca').value.trim(),
+					cilindrada: parseInt(document.getElementById('cilindrada').value,10) || null,
+					invitado: document.getElementById('invitado').value.trim(),
+					rol: document.getElementById('rol').value
+				};
+			}
+
+			function validate(data){
+				if (!data.nombre) return 'El nombre es obligatorio.';
+				if (!data.edad || data.edad < 14) return 'Edad inválida.';
+				if (!data.direccion) return 'La dirección es obligatoria.';
+				if (!data.marca) return 'La marca de la moto es obligatoria.';
+				if (!data.cilindrada) return 'La cilindrada es obligatoria.';
+				if (!data.invitado) return 'Indica quién lo invitó.';
+				if (!data.rol) return 'Selecciona un rol.';
+				return null;
+			}
+
+			form.addEventListener('submit', function(e){
+				e.preventDefault();
+				msg.textContent = '';
+
+				const data = readFormData();
+				const err = validate(data);
+				if (err){ msg.textContent = err; return; }
+
+				// Guardar en localStorage (como ejemplo). En una app real enviar al servidor.
+						try{
+							const existing = JSON.parse(localStorage.getItem('users')||'[]');
+							existing.push(Object.assign({ id: Date.now() }, data));
+							localStorage.setItem('users', JSON.stringify(existing));
+							msg.textContent = 'Usuario capturado con éxito.';
+							form.reset();
+
+							// Redirigir al index mostrando el nombre (usar apodo si existe)
+							const displayName = data.apodo || data.nombre;
+							setTimeout(function(){
+								window.location.href = '../index.html?user=' + encodeURIComponent(displayName);
+							}, 700);
+						}catch(ex){
+							console.error(ex);
+							msg.textContent = 'Error guardando el usuario en localStorage.';
+						}
+			});
+		})();
+	</script>
+</body>
+</html>
